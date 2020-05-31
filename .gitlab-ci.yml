@@ -1,0 +1,12 @@
+image: "debian:buster"
+
+before_script:
+  - apt update -y
+  - apt install -y automake bison build-essential flex git openssl libssl-dev libtool zlib1g-dev
+
+build_ircd:
+  stage: build
+  script:
+    - ./autogen.sh
+    - ./configure --enable-openssl --enable-oper-chghost --with-nicklen=50
+    - make
