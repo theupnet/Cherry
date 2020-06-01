@@ -9,7 +9,7 @@
  * m_chghost.c: A module for handling spoofing dynamically.
  */
 
-#define ENABLE_OPER_CHGHOST
+#define ENABLE_OPER_CHGHOST 1
 
 #include "stdinc.h"
 #include "send.h"
