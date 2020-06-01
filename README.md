@@ -12,6 +12,7 @@ server for Upnet. This is meant to be used with the
 
   * `automake`
   * `bison`
+  * `bsdmainutils`
   * `build-essential`
   * `flex`
   * `git`

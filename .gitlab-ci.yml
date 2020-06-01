@@ -7,7 +7,7 @@ stages:
 
 before_script:
   - apt update -y
-  - apt install -y automake bison build-essential flex git openssl libssl-dev libtool zlib1g-dev
+  - apt install -y automake bison bsdmainutils build-essential flex git openssl libssl-dev libtool zlib1g-dev
 
 build:
   stage: build
