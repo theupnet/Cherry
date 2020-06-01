@@ -1,20 +1,33 @@
-image: "debian:buster"
+image: debian:buster
+
+stages:
+  - build
+  - test
+  - deploy
 
 before_script:
-  - printf 'section_start:%d:setup\r\e[0KSystem Setup\n' "$(date +%s)"
   - apt update -y
   - apt install -y automake bison build-essential flex git openssl libssl-dev libtool zlib1g-dev
-  - printf 'section_end:%d:setup\r\e[0k\n' "$(date +%s)"
 
-build_ircd:
+build:
   stage: build
   script:
-    - printf 'section_start:%d:genconfigure\r\e[0KGenerate the configure script\n' "$(date +%s)"
     - ./autogen.sh
-    - printf 'section_end:%d:genconfigure\r\e[0k\n' "$(date +%s)"
-    - printf 'section_start:%d:genmakefile\r\e[0KGenerate the Makefile\n' "$(date +%s)"
-    - ./configure --enable-openssl --enable-oper-chghost --with-nicklen=50
-    - printf 'section_end:%d:genmakefile\r\e[0k\n' "$(date +%s)"
-    - printf 'section_start:%d:buildircd\r\e[0KBuild the application\n' "$(date +%s)"
+    - ./configure --enable-openssl --with-nicklen=50
     - make
-    - printf 'section_end:%d:buildircd\r\e[0k\n' "$(date +%s)"
+
+test:
+  stage: test
+  image:
+    name: debian:buster
+    entrypoint:
+      - exec
+      - su
+      - -c
+      - /bin/bash
+      - irc
+  script:
+    - ./autogen.sh
+    - ./configure --enable-openssl --with-nicklen=50
+    - make
+    - make -C tests check-local
