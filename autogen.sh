@@ -1,96 +1,85 @@
-#! /bin/sh
+#!/bin/sh
 
-TOP_DIR=$(dirname $0)
-LAST_DIR=$PWD
-
-if test ! -f $TOP_DIR/configure.ac ; then
-   echo "You must execute this script from the top level directory."
-   exit 1
+if ! test -f configure.ac; then
+  printf 'You must execute this script from the top level directory.\n' >&2
+  exit 1
 fi
 
-AUTOCONF=${AUTOCONF:-autoconf}
-ACLOCAL=${ACLOCAL:-aclocal}
-AUTOMAKE=${AUTOMAKE:-automake}
-AUTOHEADER=${AUTOHEADER:-autoheader}
-LIBTOOLIZE=${LIBTOOLIZE:-libtoolize}
-#SHTOOLIZE=${SHTOOLIZE:-shtoolize}
-
-dump_help_screen ()
-{
-   echo "Usage: $0 [options]"
-   echo 
-   echo "options:"
-   echo "  -n           skip CVS changelog creation"
-   echo "  -h,--help    show this help screen"
-   echo
-   exit 0
+dump_help_screen() {
+  printf 'Usage: %s [options]\n' "$0"
+  printf '\n' 
+  printf 'options:\n'
+  printf '  -n           skip CVS changelog creation\n'
+  printf '  -h,--help    show this help screen\n'
+  printf '\n'
+  exit
 }
 
-parse_options ()
-{
-   while test "$1" != "" ; do
-      case $1 in
-         -h|--help)
-            dump_help_screen
-            ;;
-         -n)
-            SKIP_CVS_CHANGELOG=yes
-            ;;
-         *)
-            echo Invalid argument - $1
-            dump_help_screen
-            ;;
-      esac
-      shift
-   done
+parse_options() {
+  while [ $# -gt 0 ]; do
+    case $1 in
+    -h|--help)
+      dump_help_screen
+      ;;
+    -n)
+      export SKIP_CVS_CHANGELOG=yes
+      ;;
+    *)
+      printf 'Invalid argument - %s\n' "$1" >&2
+      dump_help_screen
+    esac
+
+    shift
+  done
 }
 
-run_or_die ()
-{
-   COMMAND=$1
-   
-   # check for empty commands
-   if test -z "$COMMAND" ; then
-      echo "*warning* no command specified"
-      return 1
-   fi
-   
-   shift;
+run_or_die() {
+  if [ $# -eq 0 ]; then
+    printf '*warning* no command specified\n' >&2
+    exit 1
+  fi
 
-   OPTIONS="$@"
-   
-   # print a message
-   echo -n "*info* running $COMMAND"
-   if test -n "$OPTIONS" ; then
-      echo " ($OPTIONS)"
-   else
-      echo
-   fi
+  printf '*info* running %s' "$1"
 
-   # run or die
-   $COMMAND $OPTIONS ; RESULT=$?
-   if test $RESULT -ne 0 ; then
-      echo "*error* $COMMAND failed. (exit code = $RESULT)"
-      exit 1
-   fi
-   
-   return 0
+  if [ $# -gt 1 ]; then (
+    shift
+    printf ' (%s)' "$*"
+  ); fi
+
+  printf '\n'
+
+  if ! "$@"; then
+    printf '*error* %s failed. (exit code = %d)\n' "$1" "$?" >&2
+    exit 1
+  fi
 }
+
+last_dir=$PWD
+autoconf=${AUTOCONF:-autoconf}
+aclocal=${ACLOCAL:-aclocal}
+automake=${AUTOMAKE:-automake}
+autoheader=${AUTOHEADER:-autoheader}
+libtoolize=${LIBTOOLIZE:-libtoolize}
 
 parse_options "$@"
 
-echo "Building librb autotools files."
+printf 'Building librb autotools files.\n'
 
-cd "$TOP_DIR"/librb
+if ! cd librb; then
+  printf 'Could not change to %s/librb\n' "$PWD"
+  exit 1
+fi
+
 sh autogen.sh
+printf 'Building main autotools files.\n'
 
-echo "Building main autotools files."
+if ! cd "$last_dir"; then
+  printf 'Could not change to %s\n' "$PWD"
+  exit 1
+fi
 
-cd "$LAST_DIR"
-
-run_or_die $ACLOCAL -I m4
-run_or_die $LIBTOOLIZE --force --copy
-run_or_die $AUTOHEADER
-run_or_die $AUTOCONF
-run_or_die $AUTOMAKE --add-missing --copy
-#run_or_die $SHTOOLIZE all
+run_or_die "$aclocal" -I m4
+run_or_die "$libtoolize" --force --copy
+run_or_die "$autoheader"
+run_or_die "$autoconf"
+run_or_die "$automake" --add-missing --copy
