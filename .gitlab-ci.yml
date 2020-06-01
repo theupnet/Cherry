@@ -7,7 +7,7 @@ stages:
 
 before_script:
   - apt update -y
-  - apt install -y automake bison bsdmainutils build-essential flex git openssl libssl-dev libtool zlib1g-dev
+  - apt install -y automake bison bsdmainutils build-essential flex git libssl-dev libtool openssl sudo zlib1g-dev
 
 build:
   stage: build
@@ -20,14 +20,9 @@ test:
   stage: test
   image:
     name: debian:buster
-    entrypoint:
-      - exec
-      - su
-      - -c
-      - /bin/bash
-      - irc
   script:
     - ./autogen.sh
     - ./configure --enable-openssl --with-nicklen=50
     - make
-    - make -C tests check-local
+    - chown -R irc "$CI_PROJECT_DIR"
+    - sudo -u irc make -C tests check-local

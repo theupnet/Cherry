@@ -16,9 +16,9 @@ server for Upnet. This is meant to be used with the
   * `build-essential`
   * `flex`
   * `git`
-  * `openssl`
   * `libssl-dev`
   * `libtool`
+  * `openssl`
   * `zlib1g-dev`
 
 ## Building from Source
