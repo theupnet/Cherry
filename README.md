@@ -10,9 +10,15 @@ server for Upnet. This is meant to be used with the
 
 ## Dependencies
 
-   * `bison`
-   * `build-essential`
-   * `flex`
+  * `automake`
+  * `bison`
+  * `build-essential`
+  * `flex`
+  * `git`
+  * `openssl`
+  * `libssl-dev`
+  * `libtool`
+  * `zlib1g-dev`
 
 ## Building from Source
 
