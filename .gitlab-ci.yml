@@ -30,7 +30,7 @@ deploy:
   script:
     - mkdir -p "/tmp/release-$CI_BUILD_TAG"
     - ./autogen.sh
-    - ./configure --enable-openssl --with-nicklen=50 --prefix=
+    - ./configure --enable-openssl --with-nicklen=50 --prefix=/
     - make
     - make install
     - tar -C "/tmp/release-$CI_BUILD_TAG" -czf "/tmp/cherry-$CI_BUILD_TAG.tar.gz" .
