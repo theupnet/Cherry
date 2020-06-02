@@ -7,7 +7,7 @@ stages:
 
 before_script:
   - apt update -y
-  - apt install -y automake bison bsdmainutils build-essential flex git libssl-dev libtool openssl sudo zlib1g-dev
+  - apt install -y automake bison bsdmainutils build-essential flex git libssl-dev libtool openssl rsync ssh sudo zlib1g-dev
 
 build:
   stage: build
@@ -18,11 +18,25 @@ build:
 
 test:
   stage: test
-  image:
-    name: debian:buster
   script:
     - ./autogen.sh
     - ./configure --enable-openssl --with-nicklen=50
     - make
     - chown -R irc "$CI_PROJECT_DIR"
     - sudo -u irc make -C tests check-local
+
+deploy:
+  stage: deploy
+  script:
+    - mkdir -p "/tmp/release-$CI_BUILD_TAG"
+    - ./autogen.sh
+    - ./configure --enable-openssl --with-nicklen=50 --prefix=
+    - make
+    - make install
+    - tar -C /tmp -zf "/tmp/release-$CI_BUILD_TAG.tar.gz" "/tmp/release-$CI_BUILD_TAG"
+    - chmod 600 "$SSH_PRIVATE_KEY"
+    - rsync -e "ssh -i $SSH_PRIVATE_KEY" -av "/tmp/release-$CI_BUILD_TAG.tar.gz" "nginx@watson.naughtysysadmins.com:"
+    # make release and deploy source + build to sherlock
+  rules:
+    - if: '$CI_BUILD_TAG =~ /^v[0-9]+(\.[0-9]+)+$/'
+      when: always
