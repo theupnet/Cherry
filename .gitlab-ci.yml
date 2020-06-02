@@ -35,7 +35,7 @@ deploy:
     - make install
     - tar -C "/tmp/release-$CI_BUILD_TAG" -czf "/tmp/cherry-$CI_BUILD_TAG.tar.gz" .
     - chmod 600 "$SSH_PRIVATE_KEY"
-    - rsync -e "ssh -i $SSH_PRIVATE_KEY" -av "/tmp/cherry-$CI_BUILD_TAG.tar.gz" "nginx@watson.naughtysysadmins.com:"
+    - rsync -e "ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no" -av "/tmp/cherry-$CI_BUILD_TAG.tar.gz" "nginx@watson.naughtysysadmins.com:"
     # make release and deploy source + build to sherlock
   rules:
     - if: '$CI_BUILD_TAG =~ /^v[0-9]+(\.[0-9]+)+$/'
