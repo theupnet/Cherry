@@ -18,6 +18,8 @@ build:
   artifacts:
     paths:
       - .
+    exclude:
+      - .git
 
 test:
   stage: test
