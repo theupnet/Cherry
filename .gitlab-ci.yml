@@ -17,9 +17,18 @@ build:
     - make
   artifacts:
     paths:
-      - .
-    exclude:
-      - .git
+      - authd
+      - bandb
+      - extensions
+      - ircd
+      - libltdl
+      - librb
+      - libtool
+      - modules
+      - ssld
+      - tests
+      - tools
+      - wsockd
 
 test:
   stage: test
