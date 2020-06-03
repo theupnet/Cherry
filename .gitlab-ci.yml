@@ -47,14 +47,11 @@ test:
 deploy:
   stage: deploy
   script:
-    - mkdir -p "/tmp/release-$CI_BUILD_TAG"
-    - ./autogen.sh
-    - ./configure --enable-openssl --with-nicklen=50 "--prefix=/tmp/release-$CI_BUILD_TAG"
-    - make
+    - mkdir -p /usr/ircd
     - make install
-    - tar -C "/tmp/release-$CI_BUILD_TAG" -czf "/tmp/cherry-$CI_BUILD_TAG.tar.gz" .
+    - tar -C "/usr/ircd" -czf "/tmp/$CI_BUILD_TAG.tar.gz" .
     - chmod 600 "$SSH_PRIVATE_KEY"
-    - rsync -e "ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no" -av "/tmp/cherry-$CI_BUILD_TAG.tar.gz" "nginx@watson.naughtysysadmins.com:"
+    - rsync -e "ssh -i $SSH_PRIVATE_KEY -o StrictHostKeyChecking=no" -av "/tmp/$CI_BUILD_TAG.tar.gz" "nginx@watson.naughtysysadmins.com:"
   rules:
     - if: '$CI_BUILD_TAG =~ /^v[0-9]+(\.[0-9]+)+$/'
       when: always
