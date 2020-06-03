@@ -17,13 +17,18 @@ build:
     - make
   artifacts:
     paths:
+      - Makefile
+      - aclocal.m4
       - authd
       - bandb
+      - doc
       - extensions
+      - help
       - ircd
       - libltdl
       - librb
       - libtool
+      - m4
       - modules
       - ssld
       - tests
