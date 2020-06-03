@@ -13,15 +13,15 @@ build:
   stage: build
   script:
     - ./autogen.sh
-    - ./configure --enable-openssl --with-nicklen=50
+    - ./configure --enable-openssl --enable-oper-chghost --with-nicklen=50 --with-topiclen=390 --with-custom-branding=Upnet --program-transform-name='s/^charybdis-/cherry-/;s/^charybdis$/cherry/' --prefix=/usr/ircd
     - make
+  artifacts:
+    paths:
+      - .
 
 test:
   stage: test
   script:
-    - ./autogen.sh
-    - ./configure --enable-openssl --with-nicklen=50
-    - make
     - chown -R irc "$CI_PROJECT_DIR"
     - sudo -u irc make -C tests check-local
 
@@ -39,3 +39,6 @@ deploy:
   rules:
     - if: '$CI_BUILD_TAG =~ /^v[0-9]+(\.[0-9]+)+$/'
       when: always
+
+
+
