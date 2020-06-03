@@ -21,6 +21,8 @@ build:
       - aclocal.m4
       - authd
       - bandb
+      - config.status
+      - configure
       - doc
       - extensions
       - help
